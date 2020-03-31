@@ -29,7 +29,7 @@ def main():
     spline_maker = NURBS(p)
     spline_maker.set_points(X, Y, W, T, True, True)
     curve, key_lines = spline_maker.get_curve(num_of_segments)
-    # возьмём реальные точки по которым был расчитан сплайн
+    # take the real points where the spline was calculated
     draw_x = spline_maker.get_key_point_x()
     draw_y = spline_maker.get_key_point_y()
 
