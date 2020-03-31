@@ -2,7 +2,7 @@
 A simple implementation of the de Boer algorithm for building NURBS
 
 ## Example of how the algorithm works
-***rounding curve***
+#### rounding curve
 ![Visualization](rounding.gif)
-***wave curve***
+#### wave curve
 ![Visualization](wave.gif)
