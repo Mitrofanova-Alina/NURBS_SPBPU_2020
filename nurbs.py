@@ -11,7 +11,7 @@ class Node:
         return np.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
 
-class NURBS:
+class NURBSpline:
     def __init__(self, power=3):
         self.p = power
         self.t = []
@@ -41,7 +41,7 @@ class NURBS:
 
         # check dimensions
         if not (len(x) == len(y) == len(weight)):
-            print("Alert, invalid dimension, reduced everything to the minimum dimension")
+            print("Warning, invalid dimension, reduced everything to the minimum dimension")
             n = min([len(x), len(y), len(weight)])
         else:
             n = len(x)
@@ -49,14 +49,14 @@ class NURBS:
         # check dimensions t
         if t is not None:
             if len(t) != n + self.p + 1:
-                print("Alert, the length of the array t does not match the required n + p + 1 (%i != %i), nodes are set uniformly" % (len(t), n + self.p + 1))
+                print("Warning, the length of the array t does not not equal n + p + 1, nodes are set uniformly")
                 # we set the nodes ourselves
                 t = None
         # check for non-decrease t
         if t is not None:
             for i in range(len(t) - 1):
                 if t[i] > t[i + 1]:
-                    print("Alert, the array t must be non-decreasing, nodes are set uniformly")
+                    print("Warning, the array t must be non-decreasing, nodes are set uniformly")
                     # we set the nodes ourselves
                     t = None
                     break
@@ -64,18 +64,18 @@ class NURBS:
         # check the positivity of weights
         for w in weight:
             if w < 0:
-                print("Alert, weights must be positive, all weights are now equal to 1")
-                weight = [1 for i in range(n)]
+                print("Warning, weights must be positive, all weights are now equal to 1")
+                weight = np.ones(n)
                 break
 
         # checking that x, y is too short
         if n < self.p + 1:
-            print("Alert, the number of control points must be at least p + 1, the curve has been replaced with a model one")
+            print("Warning, the number of control points less then p + 1, the curve has been replaced with a model one")
             n = self.p + 1
             # set some model curve
             x = [i for i in range(n)]
             y = [(-1) ** i for i in range(n)]
-            weight = [1 for i in range(n)]
+            weight = np.ones(n)
             t = None
 
         self.points = [Node(x[i], y[i], weight[i]) for i in range(0, n)]
@@ -137,8 +137,10 @@ class NURBS:
                 else:
                     tmp_alpha = (cur_t - t_j) / denominator
 
-                new_x = (1 - tmp_alpha) * prev_points[h].x * prev_points[h].weight + tmp_alpha * prev_points[h + 1].x * prev_points[h + 1].weight
-                new_y = (1 - tmp_alpha) * prev_points[h].y * prev_points[h].weight + tmp_alpha * prev_points[h + 1].y * prev_points[h + 1].weight
+                new_x = (1 - tmp_alpha) * prev_points[h].x * prev_points[h].weight + tmp_alpha * \
+                    prev_points[h + 1].x * prev_points[h + 1].weight
+                new_y = (1 - tmp_alpha) * prev_points[h].y * prev_points[h].weight + tmp_alpha * \
+                    prev_points[h + 1].y * prev_points[h + 1].weight
                 new_weight = (1 - tmp_alpha) * prev_points[h].weight + tmp_alpha * prev_points[h + 1].weight
                 new_point = Node(new_x / new_weight, new_y / new_weight, new_weight)
 
